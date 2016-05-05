@@ -2,7 +2,8 @@ class Slider {
   static defaults = {
     transitionDuration: 1000,   // slide duration time
     transitionDelay: 8000,      // slide delay
-    buttons: true
+    buttons: true,
+    itemSelector: '.slider-item'
   }
   
   timer = null     // the timeout object
@@ -11,7 +12,7 @@ class Slider {
   constructor (selector = '', args = {}) {
     this.args = Object.assign(Slider.defaults, args)
     this.el = document.querySelector(selector)
-    this.items = this.el.childNodes
+    this.items = Array.from(this.el.querySelectorAll(args.itemSelector))
     
     if (items.length > 1 && this.args.buttons) {
       this.createButtons()

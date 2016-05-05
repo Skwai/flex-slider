@@ -1,1 +1,13 @@
-@import ""
+#slider {
+  max-width: 800px;
+  overflow: hidden;
+  margin: 0 auto;
+}
+
+.slide-reel {  
+  display: flex;
+}
+
+.slide {
+  flex: 0 0 50%;
+}
