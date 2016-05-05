@@ -29,3 +29,19 @@
     padding-top: 18.8% /* 16:9 / 3 */
   }
 }
+
+.slider-btn {
+  width: 2rem;
+  height: 2rem;
+  border: #ddd solid 1px;
+  background: #eee;
+  border-radius: 50%;
+}
+
+.slider-btn-prev::before {
+  content: "<"
+}
+
+.slider-btn-next::before {
+  content: ">"
+}

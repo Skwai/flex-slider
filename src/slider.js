@@ -1,9 +1,13 @@
-class Slider {
+export default class Slider {
+  
   static defaults = {
-    transitionDelay: 6000,      // {Number} slide delay (ms)
-    buttons: true,              // {Boolean} whether to toggle buttons or not
-    reel: '.slider-reel',       // {String} reel selector
-    items: '.slider-item'       // {String} items selector
+    transitionDelay: 6000,                  // {Number} slide delay (ms)
+    buttons: true,                          // {Boolean} whether to toggle buttons or not
+    reel: '.slider-reel',                   // {String} reel selector
+    items: '.slider-item',                  // {String} items selector
+    buttonClass: 'slider-btn',             // {String} button class
+    buttonPrevClass: 'slider-btn-prev',    // {String} button prev class
+    buttonNextClass: 'slider-btn-next'     // {String} button next class
   }
   
   timer = null     // the timeout object
@@ -40,13 +44,17 @@ class Slider {
     // prev
     const prevButton = document.createElement('button')
     prevButton.type = 'button'    
-    prevButton.addEventListener('click', ::this.prev)    
+    prevButton.addEventListener('click', ::this.prev)
+    prevButton.classList.add(this.args.buttonClass)
+    prevButton.classList.add(this.args.buttonPrevClass)
     this.el.appendChild(prevButton)
     
     // next
     const nextButton = document.createElement('button')
     nextButton.type = 'button'    
     nextButton.addEventListener('click', ::this.next)
+    nextButton.classList.add(this.args.buttonClass)
+    nextButton.classList.add(this.args.buttonNextClass)
     this.el.appendChild(nextButton)
   }
   
@@ -81,8 +89,7 @@ class Slider {
    */
   next () {    
     const last = this.getLastItem().getBoundingClientRect()
-    const el = this.el.getBoundingClientRect()
-    
+    const el = this.el.getBoundingClientRect()    
     // If there's going to be whitespace at the end then reset items
     if (last.right - last.width < el.width) {
       this.active = 0
@@ -98,9 +105,7 @@ class Slider {
    */  
   prev () {
     this.active = this.active-1 >= 0 ? this.active - 1 : this.items.length
-    this.setActive()
+    this.slide()
     this.queue()
   }
 }
-
-export default Slider
