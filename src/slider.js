@@ -17,8 +17,6 @@ class Slider {
     this.el = document.querySelector(selector)
     this.items = Array.from(this.el.querySelectorAll(args.items))
     
-    console.log(this.items)
-    
     // render prev and next buttons
     if (this.items.length > 1 && this.args.buttons) {
       this.createButtons()
@@ -73,9 +71,9 @@ class Slider {
    * Back a slide
    */  
   prev () {
-    clearTimeout(this.timer)
     this.active = this.active-1 >= 0 ? this.active - 1 : this.items.length
-    this.setActive() 
+    this.setActive()
+    this.queue()
   }
 }
 
