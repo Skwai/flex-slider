@@ -3,7 +3,7 @@ class Slider {
     transitionDuration: 1000,   // slide duration time
     transitionDelay: 8000,      // slide delay
     buttons: true,
-    itemSelector: '.slider-item'
+    items: '.slider-item'
   }
   
   timer = null     // the timeout object
@@ -12,7 +12,7 @@ class Slider {
   constructor (selector = '', args = {}) {
     this.args = Object.assign(Slider.defaults, args)
     this.el = document.querySelector(selector)
-    this.items = Array.from(this.el.querySelectorAll(args.itemSelector))
+    this.items = Array.from(this.el.querySelectorAll(args.items))
     
     if (items.length > 1 && this.args.buttons) {
       this.createButtons()
@@ -44,11 +44,13 @@ class Slider {
   }
   
   next () {
+    clearTimeout(this.timer)
     this.active = this.active+1 < this.items.length ? this.active+1 : 0
     this.setActive()
   }
   
   prev () {
+    clearTimeout(this.timer)
     this.active = this.active-1 >= 0 ? this.active - 1 : this.items.length
     this.setActive() 
   }
