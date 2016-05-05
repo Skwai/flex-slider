@@ -5,7 +5,7 @@
   "main": "dist/slider.js",
   "scripts": {
     "test": "",
-    "build": "browserify src/slider.js -o dist/slider.js -t babelify"
+    "build": "browserify src/slider.js -t babelify | uglifyjs > dist/slider.min.js"
   },
   "author": "",
   "license": "ISC",
@@ -16,6 +16,7 @@
     "babelify": "^7.3.0",
     "browserify": "^13.0.0",
     "install": "^0.7.3",
-    "npm": "^3.8.8"
+    "npm": "^3.8.8",
+    "uglifyjs": "^2.4.10"
   }
 }

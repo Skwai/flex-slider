@@ -1,55 +1,55 @@
-// https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Properties_Reference
-const PARENT_STYLES = {
-  display: 'flex',
-  maxWidth: '100%',
-}
-
 class Slider {
   static defaults = {
-    transitionDuration: 1000,
-    transitionDelay: 8000,
-    slideWidthMin: '480px',
-    slideWidthMax: '640px'
+    transitionDuration: 1000,   // slide duration time
+    transitionDelay: 8000,      // slide delay
+    buttons: true
   }
   
-  slides = []
+  timer = null     // the timeout object
+  active = 0       // the active slide (zero-indexed), default to 0
   
-  constructor (parent, args = {}) {
+  constructor (selector = '', args = {}) {
     this.args = Object.assign(Slider.defaults, args)
-    this.parent = document.querySelector(parent)
-    this.slides = Array.from(parent.childNodes)
-    this.applyParentStyles()
-    this.slides.forEach(slide => applySlideStyles(slide))
-  }
-  
-  applyParentStyles (parent = this.parent) {
-    Object.assign(parent, {
-      display: 'flex',
-      maxWidth: '100%'
-    })
+    this.el = document.querySelector(selector)
+    this.items = this.el.childNodes
     
-    return parent
+    if (items.length > 1 && this.args.buttons) {
+      this.createButtons()
+    }    
+    // start
+    this.queue()
   }
   
-  applySlideStyles (slide) {    
-    if (!(slide instanceof Node)) {
-      return el
-    }
-    // Apply SLIDE_STYLES to slide
-    Object.assign(slide.style, {
-      minWidth: slideWidthMin,
-      maxWidth: slideWidthMax,
-      flex: `1 1 auto`
-    })
-    return slide
+  createButtons () {
+    // prev
+    const prevButton = document.createElement('button')
+    prevButton.type = 'button'    
+    prevButton.addEventListener('click', this.prev)    
+    this.el.appendChild(prevButton)
+    
+    // next
+    const nextButton = document.createElement('button')
+    nextButton.type = 'button'    
+    nextButton.addEventListener('click', this.prev)
+    this.el.appendChild(nextButton)
+  }
+  
+  setActive () {
+    this.el.dataset.active = this.active
+  }
+  
+  queue () {
+    this.timer = setTimeout(this.next, this.args.transitionDelay)
   }
   
   next () {
-    
+    this.active = this.active+1 < this.items.length ? this.active+1 : 0
+    this.setActive()
   }
   
   prev () {
-    
+    this.active = this.active-1 >= 0 ? this.active - 1 : this.items.length
+    this.setActive() 
   }
 }
 
