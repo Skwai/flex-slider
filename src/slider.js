@@ -1,8 +1,9 @@
 class Slider {
   static defaults = {
-    transitionDelay: 4000,      // slide delay
-    buttons: true,
-    items: '.slider-item'       // slider items selector
+    transitionDelay: 6000,      // {Number} slide delay (ms)
+    buttons: true,              // {Boolean} whether to toggle buttons or not
+    reel: '.slider-reel',       // {String} reel selector
+    items: '.slider-item'       // {String} items selector
   }
   
   timer = null     // the timeout object
@@ -15,14 +16,20 @@ class Slider {
   constructor (selector = '', args = {}) {
     this.args = Object.assign(Slider.defaults, args)
     this.el = document.querySelector(selector)
-    this.items = Array.from(this.el.querySelectorAll(args.items))
+    this.reel = this.el.querySelector(this.args.reel)
+    this.items = Array.from(this.el.querySelectorAll(this.args.items))
     
     // render prev and next buttons
     if (this.items.length > 1 && this.args.buttons) {
       this.createButtons()
     }    
+    
+    // when window is resized then recalculate the offset
+    if (window) {
+      window.addEventListener('resize', ::this.slide)
+    }
+    
     // start
-    this.setActive()
     this.queue()
   }
   
@@ -44,10 +51,21 @@ class Slider {
   }
   
   /**
-   * Set the active data attr 
+   * Slide the reel to the correct position 
    */
-  setActive () {
-    this.el.dataset.active = this.active
+  slide () {
+    const last = this.getLastItem().getBoundingClientRect()
+    const pc = last.width / this.el.getBoundingClientRect().width * this.active * 100 * -1
+    // const offset = .width * this.active * -1    
+    this.reel.style.transform = `translateX(${pc}%)`
+  }
+  
+  /**
+   * Get the last item
+   * @return {Node}
+   */
+  getLastItem () {
+    return this.items.slice(-1).pop()
   }
   
   /**
@@ -59,16 +77,24 @@ class Slider {
   }
   
   /**
-   * Forward a slide
+   * Next slide
    */
-  next () {
-    this.active = this.active+1 < this.items.length ? this.active+1 : 0
-    this.setActive()
+  next () {    
+    const last = this.getLastItem().getBoundingClientRect()
+    const el = this.el.getBoundingClientRect()
+    
+    // If there's going to be whitespace at the end then reset items
+    if (last.right - last.width < el.width) {
+      this.active = 0
+    } else {
+      this.active = this.active+1 < this.items.length ? this.active+1 : 0
+    }
+    this.slide()
     this.queue()
   }
   
   /**
-   * Back a slide
+   * Previous slide
    */  
   prev () {
     this.active = this.active-1 >= 0 ? this.active - 1 : this.items.length
