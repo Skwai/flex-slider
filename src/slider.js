@@ -7,7 +7,8 @@ export default class Slider {
     items: '.slider-item',                  // {String} items selector
     buttonClass: 'slider-btn',              // {String} button class
     buttonPrevClass: 'slider-btn-prev',     // {String} button prev class
-    buttonNextClass: 'slider-btn-next'      // {String} button next class
+    buttonNextClass: 'slider-btn-next',     // {String} button next class
+    auto: true                              // {Boolean} auto transition
   }
   
   timer = null     // the timeout object
@@ -22,16 +23,21 @@ export default class Slider {
     this.el = document.querySelector(selector)
     this.reel = this.el.querySelector(this.args.reel)
     this.items = Array.from(this.el.querySelectorAll(this.args.items))
+    
     // render prev and next buttons
     if (this.items.length > 1 && this.args.buttons) {
       this.createButtons()
     }
+    
     // when window is resized then recalculate the offset
     if (window) {
       window.addEventListener('resize', ::this.slide)
     }
-    // start
-    this.queue()
+    
+    // start    
+    if (this.args.auto) {
+      this.queue()
+    }
   }
   
   /**
@@ -59,14 +65,21 @@ export default class Slider {
    * Slide the reel to the correct position 
    */
   slide () {
-    const last = this.getLastItem().getBoundingClientRect()
-    const pc = last.width / this.el.getBoundingClientRect().width * this.active * 100 * -1
+    const lastBounds = this.getLastItem().getBoundingClientRect()
+    const elBounds = this.el.getBoundingClientRect()
+    // calculate offset (as a percent)
+    const pc = lastBounds.width / elBounds.width * this.active * 100 * -1
     // const offset = .width * this.active * -1
     this.reel.style.transform = `translateX(${pc}%)`
+    
+    // queue the next slide
+    if (this.args.auto) {
+      this.queue()
+    }
   }
   
   /**
-   * Get the last item
+   * Get the last item from this.items
    * @return {Node}
    */
   getLastItem () {
@@ -82,19 +95,34 @@ export default class Slider {
   }
   
   /**
+   * Pause the timer
+   */
+  pause () {
+    clearTimeout(this.timer)
+  }
+  
+  /**
+   * Start the timer
+   */
+  start () {
+    this.queue()
+  }
+  
+  /**
    * Next slide
    */
   next () {
-    const last = this.getLastItem().getBoundingClientRect()
-    const el = this.el.getBoundingClientRect()
-    // If there's going to be whitespace at the end then reset items
-    if (last.right - last.width < el.width) {
+    const lastBounds = this.getLastItem().getBoundingClientRect()
+    const elBounds = this.el.getBoundingClientRect()
+    
+    // if there's whitespace to the right of the last item then set `this.active` to 0 to avoid
+    if (lastBounds.right - lastBounds.width < elBounds.width) {
       this.active = 0
     } else {
       this.active = this.active + 1 < this.items.length ? this.active+1 : 0
     }
+    
     this.slide()
-    this.queue()
   }
   
   /**
@@ -103,6 +131,5 @@ export default class Slider {
   prev () {
     this.active = this.active - 1 >= 0 ? this.active - 1 : this.items.length
     this.slide()
-    this.queue()
   }
 }
